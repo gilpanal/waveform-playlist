@@ -23,6 +23,8 @@ export default class {
     this.customClass = undefined;
     this.waveOutlineColor = undefined;
     this.gain = 1;
+    this.muted = false
+    this.soloed = false
     this.fades = {};
     this.peakData = {
       type: "WebAudio",
@@ -745,6 +747,8 @@ export default class {
       start: this.startTime,
       end: this.endTime,
       name: this.name,
+      muted: this.muted,
+      soloed: this.soloed,
       customClass: this.customClass,
       cuein: this.cueIn,
       cueout: this.cueOut,

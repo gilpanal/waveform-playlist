@@ -47,6 +47,31 @@ export default class {
     this.exportWorker = new InlineWorker(ExportWavWorkerFunction);
   }
 
+  trimAudioBuffer(audioBuffer, trimDurationInSeconds) {
+    const sampleRate = audioBuffer.sampleRate;
+    const startSample = Math.floor(trimDurationInSeconds * sampleRate);
+    if (startSample >= audioBuffer.length) {
+      // If the trim duration is longer than the audio, return an empty buffer.
+      return this.ac.createBuffer(1, 1, sampleRate);
+    }
+
+    const trimmedBuffer = this.ac.createBuffer(
+      audioBuffer.numberOfChannels,
+      audioBuffer.length - startSample,
+      sampleRate
+    );
+
+    // Copy data from the original buffer to the trimmed buffer, excluding the trimmed part.
+    for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+      const sourceData = audioBuffer.getChannelData(channel);
+      const destinationData = trimmedBuffer.getChannelData(channel);
+      for (let i = 0; i < trimmedBuffer.length; i++) {
+        destinationData[i] = sourceData[i + startSample];
+      }
+    }
+    return trimmedBuffer;
+  }
+
   // TODO extract into a plugin
   initRecorder(stream) {
     this.mediaRecorder = new MediaRecorder(stream);
@@ -76,6 +101,11 @@ export default class {
         loader
           .load()
           .then((audioBuffer) => {
+
+            // THIS AFFECTS TO ALL (RECORDED AND PLAYOUT) BUT IT'S CALCULATED EVERY 300 ms
+            if (this.latency > 0) {
+              audioBuffer = this.trimAudioBuffer(audioBuffer, this.latency)
+            }
             // ask web worker for peaks.
             this.recorderWorker.postMessage({
               samples: audioBuffer.getChannelData(0),
@@ -83,6 +113,8 @@ export default class {
             });
             this.recordingTrack.setCues(0, audioBuffer.duration);
             this.recordingTrack.setBuffer(audioBuffer);
+            // THIS AFFECTS ONLY TO PLAYOUT IT'S CALCULATED EVERY 300 ms
+            //audioBuffer = this.trimAudioBuffer(audioBuffer, this.latency) // Chrome Mac 
             this.recordingTrack.setPlayout(
               new Playout(this.ac, audioBuffer, this.masterGainNode)
             );
@@ -220,8 +252,8 @@ export default class {
       }
     });
 
-    ee.on("startaudiorendering", (type) => {
-      this.startOfflineRender(type);
+    ee.on("startaudiorendering", (type, trackPos) => {
+      this.startOfflineRender(type, trackPos);
     });
 
     ee.on("statechange", (state) => {
@@ -235,8 +267,20 @@ export default class {
       this.drawRequest();
     });
 
-    ee.on("record", () => {
+    ee.on("record", (latency) => {
+      this.latency = latency
       this.record();
+    });
+
+    ee.on("updateview", () => {
+      this.drawRequest();
+    });
+
+    ee.on("resume", async () => {
+      console.log(`Audio context state change: ${this.getAudioContext().state}`);
+      if (this.getAudioContext().state === 'running') {
+        await this.getAudioContext().resume();
+      }
     });
 
     ee.on("play", (start, end) => {
@@ -508,7 +552,7 @@ export default class {
     this.cursor = start;
   }
 
-  async startOfflineRender(type) {
+  async startOfflineRender(type, trackPos) {
     if (this.isRendering) {
       return;
     }
@@ -531,14 +575,18 @@ export default class {
     const currentTime = this.offlineAudioContext.currentTime;
     const mg = this.offlineAudioContext.createGain();
 
-    this.tracks.forEach((track) => {
+    this.tracks.forEach((track, pos) => {
+      let shouldPlay = this.shouldTrackPlay(track)
+      if (trackPos >= 0) {
+        shouldPlay = pos === trackPos
+      }
       const playout = new Playout(this.offlineAudioContext, track.buffer, mg);
       playout.setEffects(track.effectsGraph);
       playout.setMasterEffects(this.effectsGraph);
       track.setOfflinePlayout(playout);
 
       track.schedulePlay(currentTime, 0, 0, {
-        shouldPlay: this.shouldTrackPlay(track),
+        shouldPlay: shouldPlay,
         masterGain: 1,
         isOffline: true,
       });
@@ -548,8 +596,12 @@ export default class {
       TODO cleanup of different audio playouts handling.
     */
     await Promise.all(setUpChain);
-    const audioBuffer = await this.offlineAudioContext.startRendering();
-
+    let audioBuffer = await this.offlineAudioContext.startRendering();
+    // TODO: check this approach
+    /*if(trackPos && this.latency) {
+     // TO LISTEN THE FIX MUST REFRESH BROWSER        
+     audioBuffer = this.trimAudioBuffer(audioBuffer, this.latency)
+    } */
     if (type === "buffer") {
       this.ee.emit("audiorenderingfinished", type, audioBuffer);
       this.isRendering = false;
@@ -563,7 +615,7 @@ export default class {
 
       // callback for `exportWAV`
       this.exportWorker.onmessage = (e) => {
-        this.ee.emit("audiorenderingfinished", type, e.data);
+        this.ee.emit("audiorenderingfinished", type, e.data, trackPos);
         this.isRendering = false;
 
         // clear out the buffer for next renderings.
@@ -622,8 +674,10 @@ export default class {
     const index = this.mutedTracks.indexOf(track);
 
     if (index > -1) {
+      track.muted = false
       this.mutedTracks.splice(index, 1);
     } else {
+      track.muted = true
       this.mutedTracks.push(track);
     }
   }
@@ -632,10 +686,13 @@ export default class {
     const index = this.soloedTracks.indexOf(track);
 
     if (index > -1) {
+      track.soloed = false
       this.soloedTracks.splice(index, 1);
     } else if (this.exclSolo) {
+      track.soloed = true
       this.soloedTracks = [track];
     } else {
+      track.soloed = true
       this.soloedTracks.push(track);
     }
   }
@@ -809,7 +866,7 @@ export default class {
     });
 
     // TODO improve this.
-    this.masterGainNode.disconnect();
+    //this.masterGainNode.disconnect();
     this.drawRequest();
     return Promise.all(this.playoutPromises);
   }
@@ -833,9 +890,14 @@ export default class {
     });
   }
 
-  clear() {
+  clear(trackPos) {
     return this.stop().then(() => {
-      this.tracks = [];
+      var newArray = []
+      if (trackPos || trackPos === 0) {
+        this.tracks.splice(trackPos, 1)
+        newArray = this.tracks
+      }
+      this.tracks = newArray;
       this.soloedTracks = [];
       this.mutedTracks = [];
       this.playoutPromises = [];

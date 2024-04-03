@@ -74,9 +74,14 @@ export default class {
 
   // TODO extract into a plugin
   initRecorder(stream, track, name = "Recording") {
+    const micsource = this.ac.createMediaStreamSource(stream)
+    micsource.connect(this.recordGainNode)
+    const dest = this.ac.createMediaStreamDestination()
+    this.recordGainNode.connect(dest)
+
     this.fixedRecordingTrack = (track !== undefined);
     this.recordingTrack = track;
-    this.mediaRecorder = new MediaRecorder(stream);
+    this.mediaRecorder = new MediaRecorder(dest.stream);
 
     this.mediaRecorder.onstart = () => {
       if (!this.fixedRecordingTrack) {
@@ -91,7 +96,7 @@ export default class {
 
       const start = this.cursor;
       this.recordingTrack.setStartTime(start);
-    
+
       this.chunks = [];
       this.working = false;
     };
@@ -179,6 +184,7 @@ export default class {
   setAudioContext(ac) {
     this.ac = ac;
     this.masterGainNode = ac.createGain();
+    this.recordGainNode = ac.createGain();
   }
 
   getAudioContext() {
@@ -274,8 +280,9 @@ export default class {
       this.drawRequest();
     });
 
-    ee.on("record", (latency) => {
+    ee.on("record", (latency, micgain) => {
       this.latency = latency
+      this.recordGainNode.gain.value = micgain;
       this.record();
     });
 

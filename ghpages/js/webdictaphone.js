@@ -79,6 +79,9 @@ const draw = () => {
 }
 
 $('#testMicrophoneModal').on('show.bs.modal', async (event) => {
+    const micGain = localStorage.getItem('micgain')
+    CURRENT_GAIN_TEST_MIC = micGain ? parseInt(micGain) : CURRENT_GAIN_TEST_MIC
+    gainSlider.value = CURRENT_GAIN_TEST_MIC
     document.getElementById('current-input-gain-test-mic').value = CURRENT_GAIN_TEST_MIC
     analyser.connect(audioCtxTestMic.destination)
     if (isSafari) {
@@ -97,5 +100,6 @@ gainSlider.addEventListener('input', function () {
     const newGainValue = parseFloat(this.value)
     CURRENT_GAIN_TEST_MIC = newGainValue
     gainNode.gain.value = newGainValue
+    localStorage.setItem('micgain', newGainValue)
     document.getElementById('current-input-gain-test-mic').value = newGainValue
 })

@@ -1,5 +1,7 @@
-import { isSafari } from '../../../../common/js/utils'
-import { setCanvasData, buttonHandlers, mediaRecorderStopUI } from './webdictaphone_ui'
+//import { isSafari } from '../../../../common/js/utils'
+import { setCanvasData, buttonHandlers, mediaRecorderStopUI } from './webdictaphoneui.js'
+
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 /* SOURCE: https://github.com/mdn/dom-examples/blob/main/media/web-dictaphone */
 

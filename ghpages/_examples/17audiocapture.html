@@ -1,0 +1,37 @@
+---
+layout: page
+title: Audio Capture Example
+lead: Hi Audio test for mic.
+permalink: audiocapture.html
+javascript: audiocapture.js
+audio_title: Starlight
+audio_artist: Muse
+---
+
+<div id="top-bar" class="playlist-top-bar">
+    <div class="playlist-toolbar">
+        {% include buttons/playback.html %}
+        {% include buttons/zoom.html %}
+        {% include buttons/states.html %}
+        {% include buttons/fades.html %}
+        {% include buttons/random.html %}
+    </div>
+</div>
+<div id="playlist"></div>
+<div class="playlist-bottom-bar">
+    {% include timeformat.html %}
+    <form class="form-inline">
+        {% include sliders/mastergain.html %}
+        {% include checkboxes/automaticscroll.html %}
+    </form>
+    <div class="sound-status"></div>
+    {% include forms/seek.html %}
+    {% include forms/webdictaphone.html %}
+    <div class="track-drop"></div>
+    <div class="loading-data"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+    crossorigin="anonymous"></script>
+<script type="module" src="js/webdictaphoneui.js"></script>
+<script type="module" src="js/webdictaphone.js"></script>

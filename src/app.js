@@ -57,6 +57,7 @@ export function init(options = {}, ee = EventEmitter()) {
   }
 
   const playlist = new Playlist();
+  const AudioContext = window.AudioContext || window.webkitAudioContext || false
   const ctx = config.ac || new AudioContext();
   playlist.setAudioContext(ctx);
   playlist.setSampleRate(config.sampleRate || ctx.sampleRate);

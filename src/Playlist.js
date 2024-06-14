@@ -40,6 +40,8 @@ export default class {
     this.durationFormat = "hh:mm:ss.uuu";
     this.isAutomaticScroll = false;
     this.resetDrawTimer = undefined;
+
+    this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   }
 
   // TODO extract into a plugin
@@ -91,7 +93,7 @@ export default class {
 
       const start = this.cursor;
       this.recordingTrack.setStartTime(start);
-    
+
       this.chunks = [];
       this.working = false;
     };
@@ -873,7 +875,9 @@ export default class {
     });
 
     // TODO improve this.
-    //this.masterGainNode.disconnect();
+    if (!this.isSafari) {
+      this.masterGainNode.disconnect();
+    }
     this.drawRequest();
     return Promise.all(this.playoutPromises);
   }

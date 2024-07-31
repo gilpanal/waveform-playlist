@@ -772,7 +772,7 @@ export default class {
 
   isPlaying() {
     return this.tracks.reduce(
-      (isPlaying, track) => isPlaying || track.isPlaying(),
+      (isPlaying, track) => isPlaying || track.isPlaying() || (this.mediaRecorder && this.mediaRecorder.state === "recording"),
       false
     );
   }
@@ -937,6 +937,7 @@ export default class {
     });
 
     this.playoutPromises = playoutPromises;
+    this.startAnimation(start)
   }
 
   startAnimation(startTime) {

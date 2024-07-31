@@ -507,9 +507,8 @@ export default class {
       "div.controls",
       {
         attributes: {
-          style: `height: ${numChan * data.height}px; width: ${
-            data.controls.width
-          }px; position: absolute; left: 0; z-index: 10;`,
+          style: `height: ${numChan * data.height}px; width: ${data.controls.width
+            }px; position: absolute; left: 0; z-index: 10;`,
         },
       },
       controls
@@ -517,6 +516,7 @@ export default class {
   }
 
   render(data) {
+    if (!this.peaks) return
     const width = this.peaks.length;
     const playbackX = secondsToPixels(
       data.playbackSeconds,
@@ -668,9 +668,8 @@ export default class {
         `div.channel.channel-${channelNum}`,
         {
           attributes: {
-            style: `height: ${data.height}px; width: ${width}px; top: ${
-              channelNum * data.height
-            }px; left: ${startX}px; position: absolute; margin: 0; padding: 0; z-index: 1;`,
+            style: `height: ${data.height}px; width: ${width}px; top: ${channelNum * data.height
+              }px; left: ${startX}px; position: absolute; margin: 0; padding: 0; z-index: 1;`,
           },
         },
         channelChildren
@@ -732,9 +731,8 @@ export default class {
       `div.channel-wrapper${audibleClass}${customClass}`,
       {
         attributes: {
-          style: `margin-left: ${channelMargin}px; height: ${
-            data.height * numChan
-          }px;`,
+          style: `margin-left: ${channelMargin}px; height: ${data.height * numChan
+            }px;`,
         },
       },
       channelChildren

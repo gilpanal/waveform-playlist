@@ -10,8 +10,8 @@ export default class {
     } else if (src instanceof AudioBuffer) {
       return new IdentityLoader(src, audioContext, ee);
     } else if (typeof src === "string") {
-      //return new XHRLoader(src, audioContext, ee);
-      return new FetchLoader(src, audioContext, ee);
+      return new XHRLoader(src, audioContext, ee);
+      //return new FetchLoader(src, audioContext, ee);
     }
 
     throw new Error("Unsupported src type");

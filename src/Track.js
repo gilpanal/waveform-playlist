@@ -219,7 +219,7 @@ export default class {
   }
 
   isPlaying() {
-    return this.playout.isPlaying();
+    return this.playout?.isPlaying();
   }
 
   setShouldPlay(bool) {

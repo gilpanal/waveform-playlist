@@ -53,6 +53,8 @@
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags",
     "prepare": "npm run compile && npm run styles && npm run webpack:unpkg",
+    "copy-umd": "cp build/waveform-playlist.umd.js ../src/pages/composition/scripts/waveform-playlist.umd.js",
+    "prepare-and-copy": "npm run prepare && npm run copy-umd",
     "compile": "babel src --out-dir lib",
     "webpack:unpkg": "webpack --config webpack.config.unpkg.js",
     "webpack:server": "webpack serve --static dist/ --color --host 0.0.0.0 --config webpack.config.dev.js",

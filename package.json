@@ -60,6 +60,7 @@
     "webpack:server": "webpack serve --static dist/ --color --host 0.0.0.0 --config webpack.config.dev.js",
     "start": "npm run webpack:server",
     "dev": "npm run jekyll:dev && npm run jekyll:scss && npm run webpack:server",
+    "dev-hiaudio": "webpack --watch --config webpack.config.dev-hiaudio.js",
     "website": "npm run build && npm run ghpages"
   },
   "repository": {

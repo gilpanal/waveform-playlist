@@ -65,7 +65,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/naomiaro/waveform-playlist.git"
+    "url": "git+https://github.com/gilpanal/waveform-playlist.git"
   },
   "keywords": [
     "waveform",
@@ -83,7 +83,7 @@
     "webaudio"
   ],
   "bugs": {
-    "url": "https://github.com/naomiaro/waveform-playlist/issues"
+    "url": "https://github.com/gilpanal/waveform-playlist/issues"
   },
-  "homepage": "http://naomiaro.github.io/waveform-playlist"
+  "homepage": "https://gilpanal.github.io/waveform-playlist"
 }

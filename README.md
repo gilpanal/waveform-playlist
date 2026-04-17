@@ -1,24 +1,27 @@
-[![npm](https://img.shields.io/npm/dm/waveform-playlist.svg)](https://www.npmjs.com/package/waveform-playlist)
+# Hi-Audio Fork Notice
 
-## Sponsors
+This repository is the Hi-Audio maintained fork of [naomiaro/waveform-playlist](https://github.com/naomiaro/waveform-playlist), pinned to upstream version `v4.3.3`.
 
-<p align="center">
-  <a href="https://moises.ai/" target="_blank">
-    <img width="222px" src="https://raw.githubusercontent.com/naomiaro/waveform-playlist/main/ghpages/img/logos/moises-ai.svg">
-  </a>
-</p>
+Hi-Audio maintains this fork separately because newer upstream releases introduced breaking changes that are incompatible with the Hi-Audio web app. Active work for this fork happens on the [`hiaudiodev`](https://github.com/gilpanal/waveform-playlist/tree/hiaudiodev) branch, which is the default working branch for this repository.
 
-[Become a sponsor](https://github.com/sponsors/naomiaro)
+This fork also includes Hi-Audio specific tooling and deployment changes, including `webpack.config.dev-hiaudio.js`, the `copy-umd` build script, a Hi-Audio FontAwesome kit configuration, and automatic demo deployment to GitHub Pages from `hiaudiodev`.
+
+- Fork repository: https://github.com/gilpanal/waveform-playlist
+- Original upstream project: https://github.com/naomiaro/waveform-playlist
+- Demo site for this fork: https://gilpanal.github.io/waveform-playlist
+- Issues for this fork: https://github.com/gilpanal/waveform-playlist/issues
+
+The API, options, and event documentation below are intentionally kept aligned with the `v4.3.3` codebase used by Hi-Audio. Code examples reflect library usage and remain valid regardless of how the package is consumed.
 
 # Waveform Playlist
 
 Inspired by [Audacity](http://audacity.sourceforge.net/), this project is a multiple track playlist editor written in ES2015 using the [Web Audio API](http://webaudio.github.io/web-audio-api/).
 
 Load tracks and set cues (track cue in, cue out), fades (track fade in, fade out) and track start/end times within the playlist.
-I've written up some demos on github for the different [audio fade types](https://github.com/naomiaro/Web-Audio-Fades) in the project.
+[Naomi Aro (@naomiaro)](https://github.com/naomiaro) has written up some demos on github for the different [audio fade types](https://github.com/naomiaro/Web-Audio-Fades) in the project.
 
-- [See examples in action](http://naomiaro.github.io/waveform-playlist)
-- [Try out the waveform editor!](http://naomiaro.github.io/waveform-playlist/web-audio-editor.html)
+- [See examples in action](https://gilpanal.github.io/waveform-playlist)
+- [Try out the waveform editor!](https://gilpanal.github.io/waveform-playlist/web-audio-editor.html)
 
 ![Screenshot](img/stemtracks.png?raw=true "stem tracks mute solo volume control")
 (code for picture shown can be found in ghpages/\_examples/04stemtracks.html)
@@ -32,17 +35,28 @@ Waveform Playlist requires webaudio in the browser to function correctly: [Can I
 
 ## Installation
 
-`npm install waveform-playlist --save`
+Use this fork as source/build output for Hi-Audio integration. For npm package installation instructions, see the [README on this repository's main branch](https://github.com/gilpanal/waveform-playlist/tree/main?tab=readme-ov-file#installation).
 
-Hate npm? Check Unpkg: https://unpkg.com/browse/waveform-playlist/
+To work with this fork directly, clone and install:
 
-- If you want to download and run the already compiled website, navigate to folder `/dist` and run `python -m SimpleHTTPServer 8000`. The website will be available at `localhost:8000/waveform-playlist`.
+```bash
+git clone https://github.com/gilpanal/waveform-playlist.git
+cd waveform-playlist
+git checkout hiaudiodev
+npm install --legacy-peer-deps
+```
+
+Node.js 14 or 16 is recommended (`nvm use 14` or `nvm use 16.13`). Ruby and Jekyll are also required for example page changes — see [jekyllrb.com/docs/installation](https://jekyllrb.com/docs/installation/).
+
+See the [Development](#development) section for available commands.
+
+- If you want to download and run the already compiled website, navigate to folder `/dist` and run `python3 -m http.server 8000`. The website will be available at `http://localhost:8000/waveform-playlist`.
 
 ## Basic Usage
 
-https://github.com/naomiaro/waveform-playlist/blob/main/examples/basic-html/
+https://github.com/gilpanal/waveform-playlist/tree/hiaudiodev/examples/basic-html/
 
-https://github.com/naomiaro/waveform-playlist/tree/main/examples/basic-express/
+https://github.com/gilpanal/waveform-playlist/tree/hiaudiodev/examples/basic-express/
 
 ```javascript
 import WaveformPlaylist from "waveform-playlist";
@@ -368,7 +382,7 @@ var playlist = WaveformPlaylist(
 var ee = playlist.getEventEmitter();
 ```
 
-An example of using the event emitter to control the playlist can be found in [/dist/js/examples/emitter.js](https://github.com/naomiaro/waveform-playlist/blob/main/dist/waveform-playlist/js/emitter.js)
+An example of using the event emitter to control the playlist can be found in [`ghpages/js/emitter.js`](https://github.com/gilpanal/waveform-playlist/blob/hiaudiodev/ghpages/js/emitter.js)
 
 #### Events to Invoke
 
@@ -412,7 +426,7 @@ An example of using the event emitter to control the playlist can be found in [/
 | `changeTrackView`         | `track, opts`                   | Collapse button has been pressed for `track`                                                                                                                                                                        |
 | `volumechange`            | `volume, track`                 | Volume of `track` has changed to `volume` (0-100)                                                                                                                                                                   |
 | `mastervolumechange`      | `volume`                        | Master volume of the playlist has changed to `volume` (0-100)                                                                                                                                                       |
-| `audiorequeststatechange` | `state, src`                    | Loading audio `src` (`string` or `File`) is now in state [`state`](https://github.com/naomiaro/waveform-playlist/wiki/Track-Loading-States) (Number)                                                                |
+| `audiorequeststatechange` | `state, src`                    | Loading audio `src` (`string` or `File`) is now in state [`state`](https://github.com/gilpanal/waveform-playlist/wiki/Track-Loading-States) (Number)                                                                |
 | `loadprogress`            | `percent, src`                  | Loading audio `src` has loaded percent `percent` (0-100)                                                                                                                                                            |
 | `audiosourcesloaded`      | _none_                          | Audio decoding has finished for all tracks                                                                                                                                                                          |
 | `audiosourcesrendered`    | _none_                          | Tracks are rendered to the playlist                                                                                                                                                                                 |
@@ -426,34 +440,69 @@ An example of using the event emitter to control the playlist can be found in [/
 
 `npm test`
 
-## Development without example changes
+## Development
 
-`npm install && npm start`
+### Without example changes
+
+`npm install --legacy-peer-deps && npm start`
 
 This will install dependencies and start the webpack server.
 
-## Development with example changes
-
-`gem install jekyll`
+### With example changes
 
 Jekyll is needed if changes to the example pages will be done.
 
-`npm install && npm run dev`
+`gem install jekyll`
 
-This will build and watch the jekyll site and startup the webpack dev server.
+`npm install --legacy-peer-deps && npm run dev`
 
-## Credits
+This will build and watch the Jekyll site and start up the webpack dev server.
 
-Originally created for the [Airtime](https://www.sourcefabric.org/software/airtime/) project at [Sourcefabric](https://www.sourcefabric.org/)
+### Hi-Audio integration build
 
-The annotation plugin has been sponsored by a fond Italian TED volunteer transcriber hoping to make the transcription process of TEDx talks easier and more fun.
+Copies the UMD file to `../src/pages/composition/scripts/waveform-playlist.umd.js`.
 
-## Books
+For **development** (webpack watch mode):
 
-Currently writing: [Mastering Tone.js](https://leanpub.com/masteringtonejs). Get notified by Leanpub when I publish.
+`npm run dev-hiaudio`
 
-<img src="https://naomiaro.github.io/img/masteringtonejs.png" title="Mastering Tone.js Cover" width="240">
+For a **production** build and copy:
+
+`npm run prepare-and-copy`
+
+To update this repository as a submodule from the parent `hiaudio_webapp` project:
+
+```bash
+git submodule update --recursive --remote --merge
+```
+
+## Contributing
+
+This fork is pinned at v4.3.3 and does not track upstream breaking changes — please keep that in mind when proposing changes.
+
+The `main` branch is not used for active development. All work happens on `hiaudiodev`. For each new task, branch from `hiaudiodev` and merge back into it when done:
+
+```bash
+git checkout hiaudiodev
+git pull origin hiaudiodev
+git checkout -b <newdevtask>
+# ... do your work ...
+git push origin <newdevtask>
+# open a PR targeting hiaudiodev
+```
+
+For bugs or feature requests: [open an issue](https://github.com/gilpanal/waveform-playlist/issues)
+
+## Acknowledgements
+
+This fork is based on the excellent work of [Naomi Aro (@naomiaro)](https://github.com/naomiaro). The original library was created for the [Airtime](https://www.sourcefabric.org/software/airtime/) project at [Sourcefabric](https://www.sourcefabric.org/).
+
+The annotation plugin was sponsored by a fond Italian TED volunteer transcriber hoping to make the transcription process of TEDx talks easier and more fun.
+
+## Maintainers
+
+[Hi-Audio](https://hiaudio.fr) team
 
 ## License
 
-[MIT License](http://doge.mit-license.org)
+[MIT License](./LICENSE.md)

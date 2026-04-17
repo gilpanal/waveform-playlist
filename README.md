@@ -11,6 +11,8 @@ This fork also includes Hi-Audio specific tooling and deployment changes, includ
 - Demo site for this fork: https://gilpanal.github.io/waveform-playlist
 - Issues for this fork: https://github.com/gilpanal/waveform-playlist/issues
 
+To see what has changed relative to the original v4.3.3 codebase, check the [comparison between `main` and `hiaudiodev`](https://github.com/gilpanal/waveform-playlist/compare/main...hiaudiodev).
+
 The API, options, and event documentation below are intentionally kept aligned with the `v4.3.3` codebase used by Hi-Audio. Code examples reflect library usage and remain valid regardless of how the package is consumed.
 
 # Waveform Playlist

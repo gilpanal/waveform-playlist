@@ -48,7 +48,7 @@ npm install --legacy-peer-deps
 
 Node.js 14 or 16 is recommended (`nvm use 14` or `nvm use 16.13`). Ruby and Jekyll are also required for example page changes — see [jekyllrb.com/docs/installation](https://jekyllrb.com/docs/installation/).
 
-See the [Development](#development) section for available commands.
+See the [Development](#development) section for available commands. For the full Hi-Audio development setup guide, see the [hiaudio_webapp wiki](https://github.com/idsinge/hiaudio_webapp/wiki/Running-waveform%E2%80%90playlist-for-development).
 
 - If you want to download and run the already compiled website, navigate to folder `/dist` and run `python3 -m http.server 8000`. The website will be available at `http://localhost:8000/waveform-playlist`.
 
